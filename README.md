@@ -1,5 +1,15 @@
  # Windowsのターミナル内で画像を表示する(Sixel Graphics)
 
+## 最初にまとめ
+
+* LinuxやMacでは様々なターミナルがSixelをサポートしていますが、Windowsで表示可能なターミナルが少なく、明確なやり方が見つからなかったのでまとめた
+
+* git-bash環境に含まれる`mintty`で表示できる
+
+* (Windowsで)画像からSixelのエスケープシーケンスを含むデータに変換するには、nodeのライブラリを使うのが簡単
+
+  ソース一式 https://github.com/murasuke/windows-sixel
+
 ## Sixel Graphics とは
 特別なエスケープシーケンスをキャラクターベースのターミナルに送信することで、画像を表示する技術です。
 
@@ -9,34 +19,36 @@
 
 LinuxやMacでは様々なターミナルがSixelをサポートしていますが、Windowsではかなり限られるようです。
 
-このあたりを調べて試した限りこの辺はうまくいきませんでしたが、もっと簡単な方法を見つけたのでメモを残します
+このあたりを調べて試した限りこの辺はうまくいきませんでしたが、もっと簡単な方法を見つけたのでメモを残します。
 * [MSYS2](https://www.msys2.org/) 表示できず
 * [VSCodeがSixelをサポート](https://zenn.dev/hankei6km/articles/display-images-on-vscode-terminal) 表示できず
 
 
 
-## 色々調べた結果、最も早く確実な方法
+## Windowsのターミナルで画像を表示する簡単、確実な手順
 
-[git for Windows](https://gitforwindows.org/)環境に含まれる`mintty`がSixelをサポートしているため、インストール、画像表示手順を記載します
+[git for Windows](https://gitforwindows.org/)環境に含まれる`mintty`がSixelをサポートしています。
+
+手運
 
 1. [git for Windows](https://gitforwindows.org/)のインストール
 
-2. `mintty`の起動と、(Sixcelのエスケープシーケンスに変換済みデータから)画像を表示できるか確認する
+2. `mintty`を起動して、(Sixcelのエスケープシーケンスに変換済みデータから)画像を表示できるか確認する
 
 3. 画像ファイルからSixelのエスケープシーケンスに変換して、`mintty`で表示する
 
-  libsixel というパッケージに入っている img2sixel コマンドを使うのが王道のようですが、Windowsでは、ソースからのコンパイルが必要になるようですので、node環境のライブラリを利用して変換します
+  ※画像ファイルからの変換は`libsixel`というパッケージに入っている'img2sixel'コマンドを使うのが王道のようですが、Windowsではソースからのコンパイルが必要なので、node環境のライブラリを利用して変換します
 
 
-### 1. [git for Windows](https://gitforwindows.org/)のインストール
+### 1. [git for Windows](https://gitforwindows.org/)と[Node.js](https://nodejs.org/en/download/package-manager)インストール
 
-[git for Windows](https://gitforwindows.org/)の「Download」からインストーラーをダウンロードしてインストールします。
+[git for Windows](https://gitforwindows.org/)と、[Node.js](https://nodejs.org/en/download/package-manager)をダウンロードしてインストールします
 
-### 2. `mintty`の起動と、(Sixcelのエスケープシーケンスに変換済みデータから)画像を表示できるか確認する
+### 2. `mintty`を起動して(Sixcelのエスケープシーケンスに変換済みデータから)画像を表示できるか確認する
 
 gitをインストールすると、`git bash`が利用できるようになります。
 
-![alt text](./image.png)
+![alt text](./img/image.png)
 
 `mintty`を起動するため`git bash`を起動します
 
@@ -47,15 +59,15 @@ gitをインストールすると、`git bash`が利用できるようになり�
 
 起動すると環境を選択するダイアログが表示されます（どれを選んでも画像は表示できます）
 
-![alt text](./image-1.png)
+![alt text](./img/image-1.png)
 
 サンプル画像データ(エスケープシーケンスを含むSixel変換後データ)をダウンロードして、カレントディレクトリに保存します
-[mountain.sixel]()
+[mountain.sixel](https://github.com/murasuke/windows-sixel/blob/master/mountain.sixel)
 
 catでファイルを開くと画像が表示されます
 
 
-![alt text](./image-2.png)
+![alt text](./img/image-2.png)
 
 
 
@@ -72,7 +84,7 @@ npm init y
 npm -i sixel canvas
 ```
 
-4. [img2sixel.js]() を作成する
+4. [img2sixel.js](https://github.com/murasuke/windows-sixel/blob/master/img2sixel.js) を作成する
 https://github.com/jerch/node-sixel/blob/master/img2sixel.js
 のコードを一部修正(require('./lib/index') ⇒ require('sixel/lib/index'))
 
@@ -159,7 +171,7 @@ minttyから下記コマンドを実行する(git-bashから`mintty`と叩くと
 node img2sixel.js mountain.png
 ```
 
-![alt text](./image-3.png)
+![alt text](./img/image-3.png)
 
 ## その他のやり方
 
